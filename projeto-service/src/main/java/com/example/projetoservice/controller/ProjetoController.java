@@ -1,9 +1,11 @@
 package com.example.projetoservice.controller;
 
+import com.example.projetoservice.dto.Log;
 import com.example.projetoservice.exception.ResourceNotFoundException;
 import com.example.projetoservice.model.Projeto;
 import com.example.projetoservice.payload.MessagePayload;
 import com.example.projetoservice.service.ProjetoService;
+import com.example.projetoservice.service.feign.LogClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +29,9 @@ import java.util.Optional;
 @Slf4j
 public class ProjetoController {
 
-    final ProjetoService projetoService;
+    private final ProjetoService projetoService;
+
+    private final LogClient logClient;
 
     @GetMapping
     public ResponseEntity<List<Projeto>> getAll(@RequestParam(required = false) Optional<String> nome){
@@ -61,6 +67,22 @@ public class ProjetoController {
     @PostMapping
     public ResponseEntity<MessagePayload> save(@RequestBody Projeto projeto){
         projetoService.save(projeto);
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("projeto_id", projeto.getId());
+        details.put("projeto_nome", projeto.getNome());
+        details.put("projeto_descricao", projeto.getDescricao());
+        details.put("projeto_categoria", projeto.getCategoria());
+        details.put("projeto_data_cadastro", projeto.getDataCadastro());
+        details.put("projeto_data_utima_alteracao", projeto.getDataUltimaAlteracao());
+
+        logClient.registrarLog(new Log(
+                "CRIA_PROJETO",
+                "Um novo projeto foi criado",
+                LocalDateTime.now(),
+                details
+        ));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criado com sucesso"));
 
     }
@@ -80,6 +102,22 @@ public class ProjetoController {
     public ResponseEntity<MessagePayload> update(@PathVariable Long id, @RequestBody Projeto projeto){
         try {
             projetoService.update(id,projeto);
+
+            Map<String, Object> details = new HashMap<>();
+            details.put("projeto_id", id);
+            details.put("projeto_nome", projeto.getNome());
+            details.put("projeto_descricao", projeto.getDescricao());
+            details.put("projeto_categoria", projeto.getCategoria());
+            details.put("projeto_data_cadastro", projeto.getDataCadastro());
+            details.put("projeto_data_utima_alteracao", projeto.getDataUltimaAlteracao());
+
+            logClient.registrarLog(new Log(
+                    "ATUALIZA_PROJETO",
+                    "Um projeto foi alterado.",
+                    LocalDateTime.now(),
+                    details
+            ));
+
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Atualizado com sucesso"));
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));
@@ -102,6 +140,17 @@ public class ProjetoController {
     public ResponseEntity<MessagePayload> delete(@PathVariable Long id){
         try {
             projetoService.deleteById(id);
+
+            Map<String, Object> details = new HashMap<>();
+            details.put("projeto_id", id);
+
+            logClient.registrarLog(new Log(
+                    "DELETA_PROJETO",
+                    "Um projeto foi deletado.",
+                    LocalDateTime.now(),
+                    details
+            ));
+
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Deletado com sucesso"));
         }catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));

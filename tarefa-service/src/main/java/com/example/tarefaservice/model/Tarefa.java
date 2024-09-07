@@ -18,6 +18,7 @@ public class Tarefa {
     private Long id;
     private String nome;
     private String descricao;
+    @Enumerated(EnumType.STRING)
     private Categoria categoria;
     @Column(name = "projeto_id")
     private long projeto;

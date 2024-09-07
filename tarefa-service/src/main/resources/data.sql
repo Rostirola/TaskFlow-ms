@@ -1,0 +1,1 @@
+INSERT INTO TAREFA(nome,descricao,categoria,projeto_id,data_cadastro,data_ultima_alteracao) VALUES ( 'TP1','1',3,1,'2023-09-05T15:30:00','2023-09-05T15:30:00');

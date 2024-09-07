@@ -20,6 +20,7 @@ public class Projeto {
     private Long id;
     private String nome;
     private String descricao;
+    @Enumerated(EnumType.STRING)
     private Categoria categoria;
     private LocalDateTime dataCadastro;
     private LocalDateTime dataUltimaAlteracao;

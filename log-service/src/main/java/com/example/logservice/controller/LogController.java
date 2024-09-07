@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class LogController {
 
-    private LogService logService;
+    private final LogService logService;
 
     @PostMapping
     public void registrarLog(@RequestBody Log log) {

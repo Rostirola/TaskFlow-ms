@@ -1,4 +1,4 @@
-package com.example.projetoservice.model;
+package com.example.tarefaservice.model;
 
 import java.time.LocalDateTime;
 

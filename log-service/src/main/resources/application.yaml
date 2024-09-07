@@ -1,10 +1,10 @@
 app:
   myport: ${PORT:0}
-aplication:
-  name: log-service
 server:
   port: ${app.myport}
 spring:
+  application:
+    name: log-service
   main:
     allow-bean-definition-overriding: true
   datasource:
