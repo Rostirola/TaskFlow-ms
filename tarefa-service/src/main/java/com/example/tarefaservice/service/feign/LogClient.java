@@ -1,6 +1,6 @@
 package com.example.tarefaservice.service.feign;
 
-import com.example.tarefaservice.model.Log;
+import com.example.tarefaservice.dto.Log;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

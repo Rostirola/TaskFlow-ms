@@ -13,8 +13,8 @@ import java.util.List;
 public class LogService {
     private final LogRepository logRepository;
 
-    public void registrarLog(Log projeto) {
-        logRepository.save(projeto);
+    public void registrarLog(Log log) {
+        logRepository.save(log);
     };
 
     public List<Log> obterTodosLogs() {

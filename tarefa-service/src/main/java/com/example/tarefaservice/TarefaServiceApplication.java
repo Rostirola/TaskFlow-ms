@@ -2,8 +2,10 @@ package com.example.tarefaservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
+@EnableFeignClients
 public class TarefaServiceApplication {
 
     public static void main(String[] args) {

@@ -26,26 +26,48 @@ import java.util.Optional;
 public class TarefaController {
     final TarefaService tarefaService;
 
+    @Operation(summary = "Recupera todas as tarefa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Recuperadas com sucesso",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessagePayload.class))}
+            ),
+            @ApiResponse(responseCode = "404", description = "Ocorreu um Erro",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessagePayload.class))}
+            )
+    })
     @GetMapping
-    public ResponseEntity<List<Tarefa>> getAll(@RequestParam(required = false) Optional<String> nome){
-        if(nome.isEmpty()){
+    public ResponseEntity<List<Tarefa>> getAll(@RequestParam(required = false) Optional<String> nome) {
+        if (nome.isEmpty()) {
             return ResponseEntity.ok(tarefaService.getAll());
-        }else {
+        } else {
             List<Tarefa> tarefas = tarefaService.filterByName(nome.get());
-            if(tarefas.isEmpty()){
+            if (tarefas.isEmpty()) {
                 return ResponseEntity.notFound().build();
-            }else{
+            } else {
                 return ResponseEntity.ok(tarefas);
             }
         }
     }
 
+    @Operation(summary = "Recupera uma tarefa")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Recuperada com sucesso",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessagePayload.class))}
+            ),
+            @ApiResponse(responseCode = "404", description = "Ocorreu um Erro",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessagePayload.class))}
+            )
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id){
-        try{
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        try {
             Optional<Tarefa> localizado = tarefaService.findById(id);
             return ResponseEntity.ok(localizado);
-        }catch (ResourceNotFoundException ex){
+        } catch (ResourceNotFoundException ex) {
             Map<String, String> message = Map.of("Message", ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
         }
@@ -54,11 +76,15 @@ public class TarefaController {
     @Operation(summary = "Salva uma tarefa")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Tarefa Salva",
-                    content ={@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Tarefa.class))} )
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Tarefa.class))}),
+            @ApiResponse(responseCode = "404", description = "Ocorreu um Erro",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MessagePayload.class))}
+            )
     })
     @PostMapping
-    public ResponseEntity<MessagePayload> save(@RequestBody Tarefa tarefa){
+    public ResponseEntity<MessagePayload> save(@RequestBody Tarefa tarefa) {
         tarefaService.save(tarefa);
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criada com sucesso"));
 
@@ -76,9 +102,9 @@ public class TarefaController {
             )
     })
     @PutMapping("/{id}")
-    public ResponseEntity<MessagePayload> update(@PathVariable Long id, @RequestBody Tarefa tarefa){
+    public ResponseEntity<MessagePayload> update(@PathVariable Long id, @RequestBody Tarefa tarefa) {
         try {
-            tarefaService.update(id,tarefa);
+            tarefaService.update(id, tarefa);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Atualizada com sucesso"));
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));
@@ -98,11 +124,11 @@ public class TarefaController {
             )
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<MessagePayload> delete(@PathVariable Long id){
+    public ResponseEntity<MessagePayload> delete(@PathVariable Long id) {
         try {
             tarefaService.deleteById(id);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Deletada com sucesso"));
-        }catch (ResourceNotFoundException ex) {
+        } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));
         }
     }
