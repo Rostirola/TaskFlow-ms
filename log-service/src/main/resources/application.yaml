@@ -19,6 +19,14 @@ spring:
     show-sql: false
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
+  rabbitmq:
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 5000
+          multiplier: 2.0
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

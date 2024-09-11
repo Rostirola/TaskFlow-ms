@@ -2,6 +2,7 @@ package com.example.logservice.controller;
 
 import com.example.logservice.model.Log;
 import com.example.logservice.payload.MessagePayload;
+import com.example.logservice.rabbitmq.LogConsumer;
 import com.example.logservice.service.LogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,6 +22,7 @@ import java.util.List;
 public class LogController {
 
     private final LogService logService;
+    private final LogConsumer logConsumer;
 
     @Operation(summary = "Salva um log")
     @ApiResponses(value = {
@@ -35,6 +37,7 @@ public class LogController {
     })
     @PostMapping
     public void registrarLog(@RequestBody Log log) {
+        logConsumer.receive(log);
         logService.registrarLog(log);
     }
 

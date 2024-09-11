@@ -4,6 +4,7 @@ import com.example.projetoservice.exception.ResourceNotFoundException;
 import com.example.projetoservice.model.Projeto;
 import com.example.projetoservice.payload.MessagePayload;
 import com.example.projetoservice.service.ProjetoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -86,7 +87,12 @@ public class ProjetoController {
     })
     @PostMapping
     public ResponseEntity<MessagePayload> save(@RequestBody Projeto projeto) {
-        projetoService.save(projeto);
+        try {
+            projetoService.save(projeto);
+        } catch (JsonProcessingException e) {
+            ResponseEntity.internalServerError().build();
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criado com sucesso"));
 
     }

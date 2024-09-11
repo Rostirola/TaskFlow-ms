@@ -2,8 +2,10 @@ package com.example.projetoservice.service;
 
 import com.example.projetoservice.dto.Log;
 import com.example.projetoservice.model.Projeto;
+import com.example.projetoservice.rabbitmq.ProjetoProducer;
 import com.example.projetoservice.repository.ProjetoRepository;
 import com.example.projetoservice.service.feign.LogClient;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.Optional;
 public class ProjetoService {
     private final ProjetoRepository projetoRepository;
     private final LogClient logClient;
+    private final ProjetoProducer producer;
 
     public List<Projeto> getAll() {
         return projetoRepository.findAll();
@@ -31,12 +34,12 @@ public class ProjetoService {
         return projetoRepository.findAll().stream().filter(projeto -> projeto.getNome().startsWith(nome)).toList();
     };
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id) throws JsonProcessingException {
         projetoRepository.deleteById(id);
         Map<String, Object> details = new HashMap<>();
         details.put("projeto_id", id);
 
-        logClient.registrarLog(new Log(
+        producer.send(new Log(
                 "DELETA_PROJETO",
                 "Um projeto foi deletado.",
                 LocalDateTime.now(),
@@ -44,7 +47,7 @@ public class ProjetoService {
         ));
     };
 
-    public void save(Projeto projeto) {
+    public void save(Projeto projeto) throws JsonProcessingException {
         projetoRepository.save(projeto);
         Map<String, Object> details = new HashMap<>();
         details.put("projeto_id", projeto.getId());
@@ -54,7 +57,7 @@ public class ProjetoService {
         details.put("projeto_data_cadastro", projeto.getDataCadastro());
         details.put("projeto_data_utima_alteracao", projeto.getDataUltimaAlteracao());
 
-        logClient.registrarLog(new Log(
+        producer.send(new Log(
                 "CRIA_PROJETO",
                 "Um novo projeto foi criado",
                 LocalDateTime.now(),
@@ -62,7 +65,7 @@ public class ProjetoService {
         ));
     };
 
-    public Projeto update(Long id, Projeto atualizado) {
+    public Projeto update(Long id, Projeto atualizado) throws JsonProcessingException {
         atualizado.setId(id);
         Map<String, Object> details = new HashMap<>();
         details.put("projeto_id", id);
@@ -72,7 +75,7 @@ public class ProjetoService {
         details.put("projeto_data_cadastro", atualizado.getDataCadastro());
         details.put("projeto_data_utima_alteracao", atualizado.getDataUltimaAlteracao());
 
-        logClient.registrarLog(new Log(
+        producer.send(new Log(
                 "ATUALIZA_PROJETO",
                 "Um projeto foi alterado.",
                 LocalDateTime.now(),
