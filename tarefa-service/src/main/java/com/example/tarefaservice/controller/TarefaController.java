@@ -4,6 +4,7 @@ import com.example.tarefaservice.exception.ResourceNotFoundException;
 import com.example.tarefaservice.model.Tarefa;
 import com.example.tarefaservice.payload.MessagePayload;
 import com.example.tarefaservice.service.TarefaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -85,7 +86,11 @@ public class TarefaController {
     })
     @PostMapping
     public ResponseEntity<MessagePayload> save(@RequestBody Tarefa tarefa) {
-        tarefaService.save(tarefa);
+        try {
+            tarefaService.save(tarefa);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(new MessagePayload("Criada com sucesso"));
 
     }
@@ -108,6 +113,8 @@ public class TarefaController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Atualizada com sucesso"));
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
 
     }
@@ -130,6 +137,8 @@ public class TarefaController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(new MessagePayload("Deletada com sucesso"));
         } catch (ResourceNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessagePayload(ex.getMessage()));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

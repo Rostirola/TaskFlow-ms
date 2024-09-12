@@ -1,6 +1,7 @@
 package com.example.logservice.rabbitmq;
 
 import com.example.logservice.model.Log;
+import com.example.logservice.service.LogService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,13 +14,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class LogConsumer {
+    private final LogService logService;
     private final ObjectMapper mapper;
     @RabbitListener(queues = {"log-queue"})
-    public Log receive(@Payload String message) {
+    public void receive(@Payload String message) {
         try {
-            return mapper.readValue(message, Log.class);
+            logService.registrarLog(mapper.readValue(message, Log.class));
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
     }

@@ -3,6 +3,7 @@ package com.example.projetoservice;
 import com.example.projetoservice.model.Categoria;
 import com.example.projetoservice.model.Projeto;
 import com.example.projetoservice.service.ProjetoService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,11 @@ public class ProjetoServiceTest {
     @Test
     @DisplayName("Deve deletar por id.")
     public void deleteById() {
-        projetoService.deleteById(1L);
+        try {
+            projetoService.deleteById(1L);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         Optional<Projeto> projeto = projetoService.findById(1L);
         assertFalse(projeto.isPresent());
     }
@@ -60,7 +65,11 @@ public class ProjetoServiceTest {
         projeto.setCategoria(Categoria.DR4);
         projeto.setDataCadastro(LocalDateTime.parse("2023-09-05T15:30:00"));
         projeto.setDataUltimaAlteracao(LocalDateTime.parse("2023-09-05T15:30:00"));
-        projetoService.save(projeto);
+        try {
+            projetoService.save(projeto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         all = projetoService.getAll();
         int estadoFinal = all.size();
         assertEquals(estadoInicial + 1,estadoFinal);
@@ -76,7 +85,11 @@ public class ProjetoServiceTest {
         projetoAtt.setCategoria(Categoria.DR4);
         projetoAtt.setDataCadastro(LocalDateTime.parse("2023-09-05T15:30:00"));
         projetoAtt.setDataUltimaAlteracao(LocalDateTime.parse("2023-09-05T15:30:00"));
-        projetoService.update(4L, projetoAtt);
+        try {
+            projetoService.update(4L, projetoAtt);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         Optional<Projeto> projetoAtualizado = projetoService.findById(1L);
         assertEquals(projeto, projetoAtualizado);
     }

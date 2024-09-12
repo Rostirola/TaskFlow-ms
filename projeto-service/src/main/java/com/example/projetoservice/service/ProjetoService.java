@@ -1,10 +1,12 @@
 package com.example.projetoservice.service;
 
 import com.example.projetoservice.dto.Log;
+import com.example.projetoservice.dto.ProjetoComTarefas;
+import com.example.projetoservice.dto.Tarefa;
 import com.example.projetoservice.model.Projeto;
 import com.example.projetoservice.rabbitmq.ProjetoProducer;
 import com.example.projetoservice.repository.ProjetoRepository;
-import com.example.projetoservice.service.feign.LogClient;
+import com.example.projetoservice.service.feign.TarefaClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,19 +21,47 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProjetoService {
     private final ProjetoRepository projetoRepository;
-    private final LogClient logClient;
     private final ProjetoProducer producer;
+    private final TarefaClient tarefaClient;
 
-    public List<Projeto> getAll() {
-        return projetoRepository.findAll();
+    public List<ProjetoComTarefas> getAll() {
+        List<Tarefa> todasTarefas = tarefaClient.getTarefas();
+        List<Projeto> projetos = projetoRepository.findAll();
+
+        return projetos.stream().map(projeto -> {
+            List<Tarefa> tarefasDoProjeto = todasTarefas.stream()
+                    .filter(tarefa -> tarefa.getProjeto() == projeto.getId())
+                    .toList();
+
+            return new ProjetoComTarefas(projeto, tarefasDoProjeto);
+        }).toList();
     };
 
-    public Optional<Projeto> findById(Long id) {
-        return projetoRepository.findById(id);
-    };
+    public Optional<ProjetoComTarefas> findById(Long id) {
+        List<Tarefa> todasTarefas = tarefaClient.getTarefas();
+        Optional<Projeto> projetoOptional = projetoRepository.findById(id);
 
-    public List<Projeto> filterByName(String nome) {
-        return projetoRepository.findAll().stream().filter(projeto -> projeto.getNome().startsWith(nome)).toList();
+        return projetoOptional.map(projeto -> {
+            List<Tarefa> tarefasDoProjeto = todasTarefas.stream()
+                    .filter(tarefa -> tarefa.getProjeto() == projeto.getId())
+                    .toList();
+
+            return new ProjetoComTarefas(projeto, tarefasDoProjeto);
+        });
+    }
+
+
+    public List<ProjetoComTarefas> filterByName(String nome) {
+        List<Tarefa> todasTarefas = tarefaClient.getTarefas();
+        List<Projeto> projetos =  projetoRepository.findAll().stream().filter(projeto -> projeto.getNome().startsWith(nome)).toList();
+
+        return projetos.stream().map(projeto -> {
+            List<Tarefa> tarefasDoProjeto = todasTarefas.stream()
+                    .filter(tarefa -> tarefa.getProjeto() == projeto.getId())
+                    .toList();
+
+            return new ProjetoComTarefas(projeto, tarefasDoProjeto);
+        }).toList();
     };
 
     public void deleteById(Long id) throws JsonProcessingException {

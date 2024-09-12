@@ -3,6 +3,7 @@ package com.example.tarefaservice;
 import com.example.tarefaservice.model.Categoria;
 import com.example.tarefaservice.model.Tarefa;
 import com.example.tarefaservice.service.TarefaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,11 @@ public class TarefaServiceTest {
     @Test
     @DisplayName("Deve deletar a tarefa por id.")
     public void deleteById() {
-        tarefaService.deleteById(1L);
+        try {
+            tarefaService.deleteById(1L);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         Optional<Tarefa> tarefa = tarefaService.findById(1L);
         assertFalse(tarefa.isPresent());
     }
@@ -60,7 +65,11 @@ public class TarefaServiceTest {
         tarefa.setProjeto(1L);
         tarefa.setDataCadastro("2023-09-05T15:30:00");
         tarefa.setDataUltimaAlteracao("2023-09-05T15:30:00");
-        tarefaService.save(tarefa);
+        try {
+            tarefaService.save(tarefa);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         all = tarefaService.getAll();
         int estadoFinal = all.size();
         assertEquals(estadoInicial + 1, estadoFinal);
@@ -77,7 +86,11 @@ public class TarefaServiceTest {
         tarefaAtt.setProjeto(1L);
         tarefaAtt.setDataCadastro("2023-09-05T15:30:00");
         tarefaAtt.setDataUltimaAlteracao("2023-09-05T15:30:00");
-        tarefaService.update(1L, tarefaAtt);
+        try {
+            tarefaService.update(1L, tarefaAtt);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         Optional<Tarefa> tarefaAtualizado = tarefaService.findById(1L);
         assertEquals(tarefa, tarefaAtualizado);
     }
