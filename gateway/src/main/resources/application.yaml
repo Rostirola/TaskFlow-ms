@@ -1,3 +1,5 @@
+server:
+  port: 9999
 spring:
   application:
     name: gateway-service
@@ -22,11 +24,9 @@ spring:
             - StripPrefix=1
           predicates:
             - Path=/log/**
-server:
-  port: 9999
 eureka:
   instance:
-    instance-id: ${spring.application.name}:${random.value}
+    instance-id: ${spring.application.name}:${random.int}
   client:
     service-url:
-      defaultUrl: http://localhost:8761/eureka/
+      defaultZone: http://EUREKA-SERVICE:8761/eureka

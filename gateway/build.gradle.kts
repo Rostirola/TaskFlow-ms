@@ -25,6 +25,10 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.4")
+    runtimeOnly("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.7.0-alpha")
+    implementation("io.github.openfeign:feign-micrometer")
 }
 
 dependencyManagement {

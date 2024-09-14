@@ -1,7 +1,5 @@
-app:
-  myport: ${PORT:0}
 server:
-  port: ${app.myport}
+  port: 8080
 spring:
   application:
     name: log-service
@@ -29,4 +27,7 @@ spring:
           multiplier: 2.0
 eureka:
   instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    instance-id: ${spring.application.name}:${random.int}
+  client:
+    service-url:
+      defaultZone: http://EUREKA-SERVICE:8761/eureka

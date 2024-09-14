@@ -1,5 +1,6 @@
 package com.example.projetoservice;
 
+import com.example.projetoservice.dto.ProjetoComTarefas;
 import com.example.projetoservice.model.Categoria;
 import com.example.projetoservice.model.Projeto;
 import com.example.projetoservice.service.ProjetoService;
@@ -24,21 +25,21 @@ public class ProjetoServiceTest {
     @Test
     @DisplayName("Deve retornar todos os projetos.")
     public void getAll() {
-        List<Projeto> all = projetoService.getAll();
+        List<ProjetoComTarefas> all = projetoService.getAll();
         assertEquals(4, all.size());
     }
 
     @Test
     @DisplayName("Deve retornar por id.")
     public void findById() {
-        Optional<Projeto> projeto = projetoService.findById(1L);
+        Optional<ProjetoComTarefas> projeto = projetoService.findById(1L);
         assertTrue(projeto.isPresent());
     }
 
     @Test
     @DisplayName("Deve retornar por nome.")
     public void filterByName() {
-        List<Projeto> projetos = projetoService.filterByName("TP2");
+        List<ProjetoComTarefas> projetos = projetoService.filterByName("TP2");
         assertEquals(1, projetos.size());
     }
 
@@ -50,14 +51,14 @@ public class ProjetoServiceTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        Optional<Projeto> projeto = projetoService.findById(1L);
+        Optional<ProjetoComTarefas> projeto = projetoService.findById(1L);
         assertFalse(projeto.isPresent());
     }
 
     @Test
     @DisplayName("Deve criar um novo registro.")
     public void save() {
-        List<Projeto> all = projetoService.getAll();
+        List<ProjetoComTarefas> all = projetoService.getAll();
         int estadoInicial = all.size();
         Projeto projeto = new Projeto();
         projeto.setNome("TP5");
@@ -78,7 +79,7 @@ public class ProjetoServiceTest {
     @Test
     @DisplayName("Deve atualizar um registro.")
     public void update() {
-        Optional<Projeto> projeto = projetoService.findById(1L);
+        Optional<ProjetoComTarefas> projeto = projetoService.findById(1L);
         Projeto projetoAtt = new Projeto();
         projetoAtt.setNome("Tp 02");
         projetoAtt.setDescricao("Desenvolver uma Camada de Persistência Real");
@@ -90,7 +91,7 @@ public class ProjetoServiceTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        Optional<Projeto> projetoAtualizado = projetoService.findById(1L);
+        Optional<ProjetoComTarefas> projetoAtualizado = projetoService.findById(1L);
         assertEquals(projeto, projetoAtualizado);
     }
 }

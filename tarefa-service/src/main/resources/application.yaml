@@ -1,8 +1,8 @@
-app:
-  myport: ${PORT:0}
 server:
-  port: ${app.myport}
+  port: 8080
 spring:
+  application:
+    name: tarefa-service
   main:
     allow-bean-definition-overriding: true
   datasource:
@@ -17,8 +17,9 @@ spring:
     show-sql: false
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
-  application:
-    name: tarefa-service
 eureka:
   instance:
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    instance-id: ${spring.application.name}:${random.int}
+  client:
+    service-url:
+      defaultZone: http://EUREKA-SERVICE:8761/eureka

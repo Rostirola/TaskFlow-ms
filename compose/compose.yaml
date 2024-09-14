@@ -1,0 +1,77 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    networks:
+      - task_flow
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./dados:/var/lib/rabbitmq/
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    restart: always
+  eureka:
+    container_name: eureka-service
+    networks:
+      - task_flow
+    ports:
+      - "8761:8761"
+    build:
+      context: ../eureka-service
+      dockerfile: Dockerfile
+    restart: always
+  projeto:
+    container_name: projeto-service
+    networks:
+      - task_flow
+    ports:
+      - "8080:8080"
+    build:
+      context: ../projeto-service
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka
+    restart: always
+  tarefa:
+    container_name: tarefa-service
+    networks:
+      - task_flow
+    ports:
+      - "8081:8080"
+    build:
+      context: ../tarefa-service
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka
+    restart: always
+  log:
+    container_name: log-service
+    networks:
+      - task_flow
+    ports:
+      - "8082:8080"
+    build:
+      context: ../log-service
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka
+    restart: always
+  gateway:
+    container_name: gateway
+    networks:
+      - task_flow
+    build:
+      context: ../gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - eureka
+      - projeto
+      - tarefa
+      - log
+    restart: always
+networks:
+  task_flow:
+    driver: bridge

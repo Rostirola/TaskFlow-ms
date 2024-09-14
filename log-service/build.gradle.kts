@@ -38,6 +38,9 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+    implementation("io.micrometer:micrometer-tracing-bridge-brave:1.3.4")
+    runtimeOnly("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.7.0-alpha")
+    implementation("io.github.openfeign:feign-micrometer")
 }
 
 dependencyManagement {
